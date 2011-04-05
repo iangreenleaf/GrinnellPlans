@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'nokogiri/diff'
 
 describe Plan do
   describe "#clean_text" do
@@ -6,7 +7,13 @@ describe Plan do
     def it_converts_text input, expected
       subject.edit_text = input
       subject.clean_text
-      subject.plan.should == "<p class=\"sub\">#{expected}</p>"
+      compare_xml subject.plan, "<p class=\"sub\">#{expected}</p>"
+    end
+
+    def compare_xml s1, s2
+      Nokogiri::HTML( s1 ).diff( Nokogiri::HTML( s2 ) ).all? do |c,dummy|
+        c == " "
+      end.should be_true
     end
 
     it "is called on save" do
@@ -19,7 +26,7 @@ describe Plan do
       expected = "<p class=\"sub\">foo</p><hr><p class=\"sub\">bar</p>"
       subject.edit_text = input
       subject.clean_text
-      subject.plan.should == expected
+      compare_xml subject.plan, expected
     end
 
     it "sanitizes disallowed html" do
