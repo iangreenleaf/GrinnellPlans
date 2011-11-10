@@ -41,6 +41,25 @@ describe Account do
       subject.crypted_password.should match( /\$1\$.{8}\$.{22}/ )
     end
   end
+
+  it "validates random token default size" do
+    token = Account.create_random_token
+    token.size.should == 8
+  end
+
+  it "new account creation" do
+    username = "bob"
+    email = "bob@blop.blop"
+    ta = TentativeAccount.create(:username => username, :user_type => "student", :email => email, :confirmation_token => "ABCD")
+    password = Account.create_new(ta)
+    password.should_not be_nil
+    account = Account.find_by_username(username)
+    account.email.should == email
+    plan = Plan.find_by_user_id(account.userid)
+    plan.plan.should == ""
+    ta = TentativeAccount.find_by_username(username)
+    ta.should == nil
+  end
 end
 
 

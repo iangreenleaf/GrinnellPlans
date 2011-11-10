@@ -1,5 +1,6 @@
 require "spec_helper"
 
 describe Notifier do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it "sends welcome email"
+  it "sends confirmation email"
 end
